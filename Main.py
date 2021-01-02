@@ -1,46 +1,56 @@
+from findpath import return_file, find_dir
 
-import os
+
+def write_file(text, name, path=None):
+    import os
+
+    if path is not None:
+        direction = os.getcwd() + r"\{}\{}.txt".format(path, name)
+        f = open(direction, "w+")
+    else:
+        direction = os.getcwd() + r"\{}.txt".format(name)
+        f = open(direction, "w+")
+
+    f.write(text)
+    f.close()
+
+    return direction
+
 
 def download_forge(version):
     print("lk")
 
 
-def find_dir(name, path):
-    result = ""
-    for root, dirs, files in os.walk(path):
-        if name in dirs:
-            result = os.path.join(root, name)
-            break
-    return result
-
-def return_file(name, path):
-    result = []
-    for root, dirs, files in os.walk(path):
-        if name in files.__str__():
-            result.append(files.__str__())
-
-    return result
-
-
 def forge(wanted_version):
+    from os import startfile
     path = 'c:/Users'
 
-    dir = find_dir('.minecraft', path)
+    direction = find_dir('.minecraft', path)
 
-    if dir:
-        if find_dir('mods', dir):
-            versions = find_dir('versions', dir)
+    if direction:
+        if find_dir('mods', direction):
+            versions = find_dir('versions', direction)
 
             forge_versions = return_file('forge', versions)
             if forge_versions[0] != "":
                 for string in forge_versions:
-                    print(string)
-                    #nu nog checken welke versie het is kan je doen met split en of het een jar of json file is
+                    if wanted_version in string:
+                        return True
+                else:
+                    download_forge(wanted_version)
+                    return False
         else:
-            download_forge("1.16.2")
+            download_forge(wanted_version)
+            return False
     else:
-        return "failed: no minecraft detected"
+        dir2 = write_file("NO MINECRAFT DETECTED", "error-minecraft", 'ERROR')
+        startfile(dir2)
+        return False
 
 
 if __name__ == '__main__':
-    forge("1.16.2")
+    if not forge("1.16.3"):
+        print("install forge lol")
+
+    if forge("1.16.2"):
+        print("nice")
